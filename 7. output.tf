@@ -11,11 +11,11 @@ output "Jenkins_Initial_Password_location" {
 }
 
 output "ACCESS_YOUR_NEXUS_HERE" {
-  value = "http://${aws_instance.nexus_server.public_ip}:8081"
+  value = "http://${aws_instance.Nexus_server.public_ip}:8081"
 }
 
 output "ACCESS_YOUR_SONARQUBE_HERE" {
-  value = "http://${aws_instance.sonar_server.public_ip}:9000"
+  value = "http://${aws_instance.sonarqube_server.public_ip}:9000"
 }
 output "MASTER_SERVER_PUBLIC_IP" {
   value = aws_instance.Jenkins_server.public_ip
