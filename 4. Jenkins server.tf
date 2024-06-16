@@ -60,6 +60,9 @@ resource "aws_instance" "Jenkins_server" {
       # Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock
       "sudo chmod 666 /var/run/docker.sock",
 
+      # Install Trivy
+      # REF: https://aquasecurity.github.io/trivy/v0.18.3/installation/
+      "sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.rpm",
       "sleep 20",
 
       # Install AWS CLI
