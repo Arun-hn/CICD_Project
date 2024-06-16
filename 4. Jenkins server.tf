@@ -63,19 +63,17 @@ resource "aws_instance" "Jenkins_server" {
       "sleep 20",
 
       # Install AWS CLI
+
       "curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\"",
       "unzip awscliv2.zip",
       "sudo ./aws/install",
 
-      # Install kubectl
-      "curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.14/2022-05-09/bin/linux/amd64/kubectl",
+      # Download kubectl and its SHA256 checksum
+      # Download kubectl 
+      "curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl",
       "chmod +x ./kubectl",
-      "sudo mv ./kubectl /usr/local/bin",
-
-      # Install eksctl
-      "curl --silent --location https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz -o /tmp/eksctl.tar.gz",
-      "tar xz -C /tmp -f /tmp/eksctl.tar.gz",
-      "sudo mv /tmp/eksctl /usr/local/bin",
+      "sudo mv ./kubectl /usr/local/bin/kubectl",
+      "kubectl version --client", # Verify kubectl version after installation
 
     ]
   }
@@ -97,6 +95,7 @@ resource "null_resource" "configure_jenkins" {
 
     inline = [
       "aws configure set region ${var.region}",
+      "aws sts get-caller-identity",
       "aws eks update-kubeconfig --region ${var.region} --name ${aws_eks_cluster.eks.id}",
       "sudo mkdir -p /var/jenkins_home/.kube",
       "sudo cp ~/.kube/config /var/jenkins_home/.kube/config",
@@ -104,5 +103,4 @@ resource "null_resource" "configure_jenkins" {
     ]
   }
 }
-
 
