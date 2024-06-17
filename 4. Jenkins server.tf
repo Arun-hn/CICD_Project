@@ -77,6 +77,42 @@ resource "aws_instance" "Jenkins_server" {
       "chmod +x ./kubectl",
       "sudo mv ./kubectl /usr/local/bin/kubectl",
       "kubectl version --client", # Verify kubectl version after installation
+      
+      # Move back to home directory
+      "cd ~",
+      
+      # Install Prometheus
+      "wget https://github.com/prometheus/prometheus/releases/download/v2.52.0/prometheus-2.52.0.linux-amd64.tar.gz",
+      "tar -xzvf prometheus-2.52.0.linux-amd64.tar.gz",
+      "cd prometheus-2.52.0.linux-amd64",
+      "./prometheus &",
+      
+      # Move back to home directory
+      "cd ~",
+
+      # Install Node Exporter
+      "wget https://github.com/prometheus/node_exporter/releases/download/v1.8.1/node_exporter-1.8.1.linux-amd64.tar.gz",
+      "tar -xzvf node_exporter-1.8.1.linux-amd64.tar.gz",
+      "cd node_exporter-1.8.1.linux-amd64",
+      "./node_exporter &",
+      
+      # Move back to home directory
+      "cd ~",
+
+      # Install Blackbox Exporter
+      "wget https://github.com/prometheus/blackbox_exporter/releases/download/v0.25.0/blackbox_exporter-0.25.0.linux-amd64.tar.gz",
+      "tar -xzvf blackbox_exporter-0.25.0.linux-amd64.tar.gz",
+      "cd blackbox_exporter-0.25.0.linux-amd64",
+      "./blackbox_exporter &",
+      
+      # Move back to home directory
+      "cd ~",
+
+      # Install Grafana
+      "wget https://dl.grafana.com/enterprise/release/grafana-enterprise-8.4.4-1.x86_64.rpm",
+      "sudo yum install -y grafana-enterprise-8.4.4-1.x86_64.rpm",
+      "sudo systemctl start grafana-server",
+      "sudo systemctl enable grafana-server"
 
     ]
   }
