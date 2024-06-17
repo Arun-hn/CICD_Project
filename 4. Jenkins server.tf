@@ -78,39 +78,64 @@ resource "aws_instance" "Jenkins_server" {
       "sudo mv ./kubectl /usr/local/bin/kubectl",
       "kubectl version --client", # Verify kubectl version after installation
       
-      # Move back to home directory
+      # create and Move Monitoring directory
       "cd ~",
+      "mkdir monitoring",
+      "cd monitoring",
       
       # Install Prometheus
       "wget https://github.com/prometheus/prometheus/releases/download/v2.52.0/prometheus-2.52.0.linux-amd64.tar.gz",
       "tar -xzvf prometheus-2.52.0.linux-amd64.tar.gz",
-      "cd prometheus-2.52.0.linux-amd64",
-      "./prometheus &",
+      "mv prometheus-2.52.0.linux-amd64 prometheus",
+      "rm prometheus-2.52.0.linux-amd64.tar.gz",
+      "cd prometheus\",
+      "./prometheus &", 
       
-      # Move back to home directory
-      "cd ~",
-
-      # Install Node Exporter
-      "wget https://github.com/prometheus/node_exporter/releases/download/v1.8.1/node_exporter-1.8.1.linux-amd64.tar.gz",
-      "tar -xzvf node_exporter-1.8.1.linux-amd64.tar.gz",
-      "cd node_exporter-1.8.1.linux-amd64",
-      "./node_exporter &",
+      # running in port  9090
       
-      # Move back to home directory
-      "cd ~",
+      # Move back to Monitoring directory
+      "cd ..",
 
       # Install Blackbox Exporter
       "wget https://github.com/prometheus/blackbox_exporter/releases/download/v0.25.0/blackbox_exporter-0.25.0.linux-amd64.tar.gz",
       "tar -xzvf blackbox_exporter-0.25.0.linux-amd64.tar.gz",
-      "cd blackbox_exporter-0.25.0.linux-amd64",
+      "mv blackbox_exporter-0.25.0.linux-amd64 blackbox_exporter",
+      "rm blackbox_exporter-0.25.0.linux-amd64.tar.gz",
+      "cd blackbox_exporter\",
       "./blackbox_exporter &",
-      
-      # Move back to home directory
-      "cd ~",
+
+      # running in port  9115
+    
+      # Move back to Monitoring directory
+      "cd ..",
+
+      # Install Node Exporter
+      "wget https://github.com/prometheus/node_exporter/releases/download/v1.8.1/node_exporter-1.8.1.linux-amd64.tar.gz",
+      "tar -xzvf node_exporter-1.8.1.linux-amd64.tar.gz",
+      "mv node_exporter-1.8.1.linux-amd64 node_exporter",
+      "rm node_exporter-1.8.1.linux-amd64.tar.gz",
+      "cd node_exporter\",      
+      "./node_exporter &",
+
+      # running in port  9100
+          
+      # Move back to Monitoring directory
+      "cd ..",
 
       # Install Grafana
-      "wget https://dl.grafana.com/enterprise/release/grafana-enterprise-8.4.4-1.x86_64.rpm",
-      "sudo yum install -y grafana-enterprise-8.4.4-1.x86_64.rpm",
+      "mkdir grafana",
+      "cd grafana\",
+
+      "sudo tee /etc/yum.repos.d/grafana.repo<<EOF",
+      "[grafana]",
+      "name=grafana",
+      "baseurl=https://packages.grafana.com/oss/rpm",
+      "repo_gpgcheck=1",
+      "enabled=1",
+      "gpgcheck=1",
+      "gpgkey=https://packages.grafana.com/gpg.key",
+      "EOF",
+      "sudo yum install -y grafana",
       "sudo systemctl start grafana-server",
       "sudo systemctl enable grafana-server"
 
