@@ -33,36 +33,37 @@ resource "aws_instance" "Jenkins_server" {
     inline = [
       # wait for 20sec before EC2 initialization
       "sleep 20",
-      "sudo yum update –y",
+      "sudo yum update –y && echo 'yum update completed",
       # Install Git 
-      "sudo yum install git -y",
+      "sudo yum install git -y && echo 'Git installed'",
 
       # Install Jenkins 
       # REF: https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/
       "sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo",
       "sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key",
       "sudo yum upgrade",
-      "sudo dnf install java-17-amazon-corretto -y",
-      "sudo yum install jenkins -y",
-      "sudo systemctl enable jenkins",
-      "sudo systemctl start jenkins",
+      "sudo dnf install java-17-amazon-corretto -y && echo 'Java installed'",
+      "sudo yum install jenkins -y && echo 'Jenkins installed'",
+      "sudo systemctl enable jenkins && echo 'Jenkins service enabled'",
+      "sudo systemctl start jenkins && echo 'Jenkins service started'",
 
       # Install Docker
       # REF: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-docker.html
       "sudo yum update -y",
       "sudo amazon-linux-extras install docker",
-      "sudo yum install -y docker",
-      "sudo systemctl start docker",
-      "sudo systemctl enable docker",
-      "sudo usermod -aG docker jenkins",
+      "sudo yum install -y docker && echo 'Docker installed'",
+      "sudo systemctl start docker && echo 'Docker service started'",
+      "sudo systemctl enable docker && echo 'Docker service enabled'",
+      "sudo usermod -aG docker jenkins && echo 'Added Jenkins to Docker group'",
 
       # To avoid below permission error
       # Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock
-      "sudo chmod 666 /var/run/docker.sock",
+      "sudo chmod 666 /var/run/docker.sock && echo 'Set Docker socket permissions'",
 
       # Install Trivy
       # REF: https://aquasecurity.github.io/trivy/v0.18.3/installation/
       "sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.rpm",
+      "echo 'Trivy installed'",
       "sleep 20",
 
       # Install AWS CLI
@@ -70,12 +71,14 @@ resource "aws_instance" "Jenkins_server" {
       "curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\"",
       "unzip awscliv2.zip",
       "sudo ./aws/install",
+      "echo 'AWS CLI installed'",
 
       # Download kubectl and its SHA256 checksum
       # Download kubectl 
       "curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl",
       "chmod +x ./kubectl",
       "sudo mv ./kubectl /usr/local/bin/kubectl",
+      "echo 'Kubectl installed'",
       "kubectl version --client", # Verify kubectl version after installation
       
       # create and Move Monitoring directory
@@ -89,10 +92,9 @@ resource "aws_instance" "Jenkins_server" {
       "mv prometheus-2.52.0.linux-amd64 prometheus",
       "rm prometheus-2.52.0.linux-amd64.tar.gz",
       "cd prometheus\",
-      "./prometheus &", 
-      
-      # running in port  9090
-      
+      "./prometheus &",
+      "echo 'Prometheus installed and running with port 9090'",
+        
       # Move back to Monitoring directory
       "cd ..",
 
@@ -103,9 +105,8 @@ resource "aws_instance" "Jenkins_server" {
       "rm blackbox_exporter-0.25.0.linux-amd64.tar.gz",
       "cd blackbox_exporter\",
       "./blackbox_exporter &",
+      "echo 'Blackbox Exporter installed and running with port  9115'",
 
-      # running in port  9115
-    
       # Move back to Monitoring directory
       "cd ..",
 
@@ -116,9 +117,9 @@ resource "aws_instance" "Jenkins_server" {
       "rm node_exporter-1.8.1.linux-amd64.tar.gz",
       "cd node_exporter\",      
       "./node_exporter &",
+      "echo 'Node Exporter installed and running with port  9100'",
 
-      # running in port  9100
-          
+               
       # Move back to Monitoring directory
       "cd ..",
 
@@ -135,9 +136,10 @@ resource "aws_instance" "Jenkins_server" {
       "gpgcheck=1",
       "gpgkey=https://packages.grafana.com/gpg.key",
       "EOF",
-      "sudo yum install -y grafana",
-      "sudo systemctl start grafana-server",
-      "sudo systemctl enable grafana-server"
+      "sudo yum install -y grafana && echo 'Grafana installed'",
+      "sudo systemctl start grafana-server && echo 'Grafana service started'",
+      "sudo systemctl enable grafana-server && echo 'Grafana service enabled'",
+      "echo 'Grafana is running with port  9100'",
 
     ]
   }
